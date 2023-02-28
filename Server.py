@@ -5,7 +5,7 @@ import pickle
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ip = "192.168.2.2"
-port = 6667
+port = 6666
 s.bind((ip, port))
 
 while True:

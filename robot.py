@@ -47,7 +47,7 @@ def servo_check():
     px.set_camera_servo2_angle(90)
     time.sleep(1)
     px.set_camera_servo1_angle(0)
-    px.set_camera_servo2_angle(0)
+    px.set_camera_servo2_angle(-10)
     time.sleep(1)
 
 def send_feed_server(photo):
