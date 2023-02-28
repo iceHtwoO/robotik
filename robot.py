@@ -5,6 +5,7 @@ from picarx import Picarx
 from robot_hat import TTS
 import os
 import time
+import numpy as np
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
