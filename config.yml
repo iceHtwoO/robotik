@@ -1,0 +1,9 @@
+robot:
+  move: False
+  servoCheck: False
+  video_downscale: 2
+  server:
+    ip: "192.168.2.2"
+    port: 6666
+  laneDetection:
+    brightness: 70
