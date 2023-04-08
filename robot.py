@@ -58,6 +58,7 @@ app = Flask(__name__)
 timing = {}
 
 def loop():
+    T = 0
     while True:
         start = time.time()
         dist = px.ultrasonic.read() # in CM
@@ -71,16 +72,16 @@ def loop():
 
         if cv2.waitKey(10) == 13:
             break
-
-        T = time.time()-start
-        timing['total'] = T
-        display_text('FPS:'+str(int(1/T)), (10,60))
-        display_text(str(timing),(10,80))
-        display_text(str(timingToPercent()), (10,100))
+        display_text('FPS:'+str(int(1/T)), (10,80))
+        display_text(str(timing),(10,1000))
+        display_text(str(timingToPercent()), (10,120))
 
         start = time.time()
         send_feed_server(img_out)
         timing['send_img'] = time.time() - start
+
+        T = time.time()-start
+        timing['total'] = T
     
     cap.release()
     cv2.destroyAllWindows()
