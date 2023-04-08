@@ -134,19 +134,13 @@ def undistort_downscale_gray(img):
 
 def steer_to_center(center_vector,delta_bottomx):
     offset_angle = rad_to_degree(get_angle_between_vectors_with_direction(center_vector,[0,-1]))
-    angle = 0
-    if abs(offset_angle) > 10:
-        if offset_angle < 0:
-            angle =+ 7
-        else:
-            angle =- 7
-    #if delta_bottomx<-5:
-    #    angle =+ 3
-    #    if delta_bottomx>5:
-    #        angle =- 3
-    print(angle)
+    angle = street_offset_to_steer_angle(offset_angle)
     display_steer_info(angle)
     px.set_dir_servo_angle(angle)
+
+def street_offset_to_steer_angle(x):
+    angle = x/45 * config['robot']['laneDetection']['maxSteer']
+    return angle if angle < config['robot']['laneDetection']['maxSteer'] else config['robot']['laneDetection']['maxSteer']
 
 def create_center_points(top1,top2, bottom1, bottom2):
     return [int((top1[0]+top2[0])/2), int((top1[1]+top2[1])/2)], [int((bottom1[0]+bottom2[0])/2),int((bottom1[1]+bottom2[1])/2)]
