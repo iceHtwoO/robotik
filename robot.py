@@ -58,7 +58,7 @@ app = Flask(__name__)
 timing = {}
 
 def loop():
-    T = 0
+    T = 1
     while True:
         start = time.time()
         dist = px.ultrasonic.read() # in CM
