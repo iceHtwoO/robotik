@@ -140,7 +140,7 @@ def steer_to_center(center_vector,delta_bottomx):
 
 def street_offset_to_steer_angle(x):
     angle = -x/45 * config['robot']['laneDetection']['maxSteer']
-    return angle if angle < config['robot']['laneDetection']['maxSteer'] else config['robot']['laneDetection']['maxSteer']
+    return angle if abs(angle) < config['robot']['laneDetection']['maxSteer'] else config['robot']['laneDetection']['maxSteer']
 
 def create_center_points(top1,top2, bottom1, bottom2):
     return [int((top1[0]+top2[0])/2), int((top1[1]+top2[1])/2)], [int((bottom1[0]+bottom2[0])/2),int((bottom1[1]+bottom2[1])/2)]
