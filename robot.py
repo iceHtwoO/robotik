@@ -127,7 +127,7 @@ def visual(img):
     cv2.drawContours(img_out, contours, -1, (0,255,0), 3)
 
 def undistort_downscale_gray(img):
-    img = cv2.undistort(img,camera_matrix, dist_coeff,None,camera_matrix)
+    #img = cv2.undistort(img,camera_matrix, dist_coeff,None,camera_matrix)
     img = img[20:img.shape[2]-20,20:img.shape[1]-20]
     img = cv2.resize(img,(int(img.shape[1] * 1/config['robot']['video_downscale']),int(img.shape[0] * 1/config['robot']['video_downscale'])))
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
