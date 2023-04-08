@@ -59,6 +59,7 @@ timing = {}
 
 def loop():
     T = 1
+    timing['total'] = 1
     while True:
         start = time.time()
         dist = px.ultrasonic.read() # in CM
