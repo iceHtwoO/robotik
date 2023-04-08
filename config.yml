@@ -7,3 +7,4 @@ robot:
     port: 6666
   laneDetection:
     brightness: 70
+    maxSteer: 15
