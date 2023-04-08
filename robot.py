@@ -74,7 +74,7 @@ def loop():
         if cv2.waitKey(10) == 13:
             break
         display_text('FPS:'+str(int(1/T)), (10,80))
-        display_text(str(timing),(10,1000))
+        display_text(str(timing),(10,100))
         display_text(str(timingToPercent()), (10,120))
 
         start = time.time()
@@ -144,7 +144,7 @@ def steer_to_center(center_vector,delta_bottomx):
     px.set_dir_servo_angle(angle)
 
 def street_offset_to_steer_angle(x):
-    angle = -x/45 * config['robot']['laneDetection']['maxSteer']
+    angle = -x/60 * config['robot']['laneDetection']['maxSteer']
     angle = np.clip(angle, -config['robot']['laneDetection']['maxSteer'], config['robot']['laneDetection']['maxSteer'])
     return angle
 
@@ -344,7 +344,7 @@ def exit_handler():
 def timingToPercent():
     timing_percent = {}
     for key, value in timing.items():
-        if key is 'total':
+        if key is "total":
             continue
         else:
             timing_percent[key] = int(value/timing["total"] * 100)
