@@ -26,10 +26,11 @@ def loop():
         data = x[0]
         data = pickle.loads(data)
         data = cv2.imdecode(data, cv2.IMREAD_COLOR)
+        #data = cv2.resize(data,(int(data.shape[1] * 4),int(data.shape[0] * 4)))
         cv2.imshow('server', data)  # to open image
         #show_data(data)
         if cv2.waitKey(10) == 13:
-            breakcv2.destroyAllWindows()
+            cv2.destroyAllWindows()
 
 def show_data(img):
     img = img[10:img.shape[2]-10,10:img.shape[1]-10]
