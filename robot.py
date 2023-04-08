@@ -360,5 +360,5 @@ if __name__ == "__main__":
     px.set_camera_servo1_angle(0)
     if config['robot']['move']:
         px.forward(1)
-    px.set_camera_servo2_angle(-2)
+    px.set_camera_servo2_angle(2)
     loop()
