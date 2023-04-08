@@ -77,7 +77,10 @@ def loop():
         display_text('FPS:'+str(int(1/T)), (10,60))
         display_text(str(timing),(10,80))
         display_text(str(timingToPercent()), (10,100))
+
+        start = time.time()
         send_feed_server(img_out)
+        timing['send_img'] = time.time() - start
     
     cap.release()
     cv2.destroyAllWindows()
