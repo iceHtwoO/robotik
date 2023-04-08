@@ -51,7 +51,6 @@ class VideoCaptureQ:
         return self.q.get()
 
 cap = VideoCaptureQ(0)
-config['robot']['video_downscale'] = 2
 
 app = Flask(__name__)
 
@@ -361,5 +360,5 @@ if __name__ == "__main__":
     px.set_camera_servo1_angle(0)
     if config['robot']['move']:
         px.forward(1)
-    px.set_camera_servo2_angle(-11)
+    px.set_camera_servo2_angle(-2)
     loop()
