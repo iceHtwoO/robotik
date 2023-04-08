@@ -51,7 +51,7 @@ class VideoCaptureQ:
         return self.q.get()
 
 cap = VideoCaptureQ(0)
-config.robot.video_downscale = 2
+config['robot']['video_downscale'] = 2
 
 app = Flask(__name__)
 
@@ -106,8 +106,8 @@ def visual(img):
     bottom_left, top_left = create_boundaryLine_points(left)
     bottom_right, top_right = create_boundaryLine_points(right)
 
-    cv2.circle(img_out, [top_left[0]*config.robot.video_downscale,top_left[1]*config.robot.video_downscale], 3, (255,255,0), 2)
-    cv2.circle(img_out, [top_right[0]*config.robot.video_downscale,top_right[1]*config.robot.video_downscale], 3, (255,255,0), 2)
+    cv2.circle(img_out, [top_left[0]*config['robot']['video_downscale'],top_left[1]*config['robot']['video_downscale']], 3, (255,255,0), 2)
+    cv2.circle(img_out, [top_right[0]*config['robot']['video_downscale'],top_right[1]*config['robot']['video_downscale']], 3, (255,255,0), 2)
     
     display_point_info(bottom_left, top_left, len(left), bottom_right, top_right, len(right))
     display_street_boundaries(bottom_left,top_left,bottom_right,top_right)
@@ -129,7 +129,7 @@ def visual(img):
 def undistort_downscale_gray(img):
     img = cv2.undistort(img,camera_matrix, dist_coeff,None,camera_matrix)
     img = img[20:img.shape[2]-20,20:img.shape[1]-20]
-    img = cv2.resize(img,(int(img.shape[1] * 1/config.robot.video_downscale),int(img.shape[0] * 1/config.robot.video_downscale)))
+    img = cv2.resize(img,(int(img.shape[1] * 1/config['robot']['video_downscale']),int(img.shape[0] * 1/config['robot']['video_downscale'])))
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 def steer_to_center(center_vector,delta_bottomx):
@@ -152,7 +152,7 @@ def create_center_points(top1,top2, bottom1, bottom2):
     return [int((top1[0]+top2[0])/2), int((top1[1]+top2[1])/2)], [int((bottom1[0]+bottom2[0])/2),int((bottom1[1]+bottom2[1])/2)]
 
 def create_linemask_from_img(img):
-    line_mask = cv2.inRange(img, np.array([0], dtype = "uint8"),np.array(config.robot.laneDetection.brightness, dtype = "uint8"))
+    line_mask = cv2.inRange(img, np.array([0], dtype = "uint8"),np.array(config['robot']['laneDetection']['brightness'], dtype = "uint8"))
     line_mask = cv2.Canny(line_mask,20,150)
     line_mask = cv2.GaussianBlur(line_mask, (5,5), 0)
     return isolate_street(line_mask)
@@ -263,11 +263,11 @@ def display_hughlines_kmeans(linesA, linesB):
             cv2.line(img_out,upscale_cords_to_original_img([x1,y1]),upscale_cords_to_original_img([x2,y2]),(0,0,255),4)
 
 def upscale_cords_to_original_img(cords):
-    return [config.robot.video_downscale*cords[0],config.robot.video_downscale*cords[1]]
+    return [config['robot']['video_downscale']*cords[0],config['robot']['video_downscale']*cords[1]]
 
 def display_street_isolation(img):
-    uwidth = img.shape[1]*config.robot.video_downscale
-    uheight = img.shape[0]*config.robot.video_downscale
+    uwidth = img.shape[1]*config['robot']['video_downscale']
+    uheight = img.shape[0]*config['robot']['video_downscale']
     triangle = np.array([[(0, uheight),(0, int(uheight*0.75)), (int(uwidth/2)-int(uwidth*0.40), int(uheight/2)), (int(uwidth/2)+int(uwidth*0.40), int(uheight/2)),(uwidth, int(uheight*0.75)), (uwidth, uheight)]])
     cv2.polylines(img_out,triangle,True,(0,255,255))
 
@@ -336,7 +336,7 @@ def send_feed_server(photo):
         ".jpg", photo, [int(cv2.IMWRITE_JPEG_QUALITY), 30])
     x_as_bytes = pickle.dumps(buffer)
 
-    s.sendto(x_as_bytes, (config.robot.server.ip, config.robot.server.port))
+    s.sendto(x_as_bytes, (config['robot']['server']['ip'], config['robot']['server']['port']))
 
 def exit_handler():
      px.forward(0)
@@ -355,11 +355,11 @@ def hello():
     return 'Hello, World!'
 
 if __name__ == "__main__":
-    if config.robot.servoCheck:
+    if config['robot']['servoCheck']:
         servo_check()
     atexit.register(exit_handler)
     px.set_camera_servo1_angle(0)
-    if config.robot.move:
+    if config['robot']['move']:
         px.forward(1)
     px.set_camera_servo2_angle(-11)
     loop()
