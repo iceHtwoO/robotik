@@ -21,6 +21,8 @@ px = Picarx()
 
 camera_matrix = np.array([[604.070295286617,0.0,311.3628902968429],[0.0,604.1024918136616,235.21752333703026],[0.0,0.0,1.0]])
 dist_coeff = np.array([0.26268929438329897,-1.4747738850911642,-0.001194422721057746,-0.0009405230479656685,2.5718806007625026])
+velocity = 0.24
+deadzone = 0.14
 
 #Bufferless Video
 class VideoCaptureQ:
@@ -55,19 +57,20 @@ cap = VideoCaptureQ(0)
 app = Flask(__name__)
 
 timing = {}
+steer_avg = []
 
 def loop():
     T = 1
     timing['total'] = 1
     while True:
         start = time.time()
-        dist = px.ultrasonic.read() # in CM
         gsd = px.get_grayscale_data() # brighter = higher; first value is right
 
         img = cap.read()
         global img_out
         img_out = img
 
+        break_car()
         visual(img)
 
         if cv2.waitKey(10) == 13:
@@ -84,7 +87,14 @@ def loop():
         timing['total'] = T
     
     cap.release()
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows() 
+
+def break_car():
+    dist = px.ultrasonic.read() # in CM
+    if dist <= 5:
+        px.forward(0)
+    elif config['robot']['move']:
+        px.forward(1)
 
 def visual(img):
     start = time.time()
@@ -102,8 +112,6 @@ def visual(img):
     linesP = find_hough_lines(line_mask)
     timing['find_lines'] = time.time() - start
     
-    #lines_with_angle = get_line_and_angle(linesP)
-    #left, right = sort_line_by_location(lines_with_angle)
     left, right = sort_line_by_kmeans(linesP)
     display_hughlines_kmeans(left, right)
 
@@ -121,7 +129,8 @@ def visual(img):
     center_vector = [top_center[0]-bottom_center[0], top_center[1]-bottom_center[1]]
 
     display_street_center(top_center,bottom_center)
-
+    #t1 = threading.Thread(target=steer_to_center, args=(center_vector,img_width/2-bottom_center[0],))
+    #t1.start()
     steer_to_center(center_vector,img_width/2-bottom_center[0])
     
     display_img_mid()
@@ -132,15 +141,19 @@ def visual(img):
 
 def undistort_downscale_gray(img):
     #img = cv2.undistort(img,camera_matrix, dist_coeff,None,camera_matrix)
-    img = img[20:img.shape[2]-20,20:img.shape[1]-20]
+    #img = img[20:img.shape[2]-20,20:img.shape[1]-20]
     img = cv2.resize(img,(int(img.shape[1] * 1/config['robot']['video_downscale']),int(img.shape[0] * 1/config['robot']['video_downscale'])))
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 def steer_to_center(center_vector,delta_bottomx):
+    global steer_avg
     offset_angle = rad_to_degree(get_angle_between_vectors_with_direction(center_vector,[0,-1]))
     angle = street_offset_to_steer_angle(offset_angle)
+    steer_avg.append(angle)
+    if len(steer_avg) > 10:
+        px.set_dir_servo_angle(np.average(steer_avg))
+        steer_avg = steer_avg[len(steer_avg)-10:]
     display_steer_info(angle)
-    px.set_dir_servo_angle(angle)
 
 def street_offset_to_steer_angle(x):
     angle = -x/60 * config['robot']['laneDetection']['maxSteer']
@@ -354,11 +367,9 @@ def hello():
     return 'Hello, World!'
 
 if __name__ == "__main__":
+    atexit.register(exit_handler)
     if config['robot']['servoCheck']:
         servo_check()
-    atexit.register(exit_handler)
     px.set_camera_servo1_angle(0)
-    if config['robot']['move']:
-        px.forward(1)
     px.set_camera_servo2_angle(2)
     loop()
